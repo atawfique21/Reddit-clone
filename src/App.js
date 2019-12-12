@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
+import 'font-awesome/css/font-awesome.min.css';
 //custom components
 import CreatePost from './components/CreatePost'
 class App extends Component {
@@ -58,8 +59,10 @@ class App extends Component {
       default:
         console.error('Vote functionality broken. Contact admin.')
     }
+    posts.push(sentPost)
+    posts.sort((a, b) => b.voteCount - a.voteCount)
     this.setState({
-      posts: [...posts, sentPost]
+      posts
     })
   }
 
@@ -78,8 +81,8 @@ class App extends Component {
             <h4>{post.title}</h4>
             <p>{post.content}</p>
             <p>{post.voteCount}</p>
-            <button onClick={(e) => this.vote(e, post, "plus")}>Vote Up!</button>
-            <button onClick={(e) => this.vote(e, post, "minus")}>Vote Down!</button>
+            <i className="fa fa-angle-up" onClick={(e) => this.vote(e, post, "plus")}></i>
+            <i className="fa fa-angle-down" onClick={(e) => this.vote(e, post, "minus")}></i>
           </div>
         )}
       </div>

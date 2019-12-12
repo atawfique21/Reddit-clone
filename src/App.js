@@ -1,26 +1,89 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { Component } from 'react';
 import './App.css';
+//custom components
+import CreatePost from './components/CreatePost'
+class App extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      title: "",
+      content: "",
+      author: "Steve",
+      voteCount: 0,
+      posts: [{
+        title: "this is a post!",
+        content: "Post content",
+        author: "Somebody",
+        voteCount: 0,
+      }],
+    }
+  }
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+  onContentChange = (e) => {
+    const name = e.target.name;
+    const content = e.target.value;
+    this.setState({
+      [name]: content
+    })
+  }
+
+  postSubmit = (e) => {
+    e.preventDefault();
+    const posts = this.state.posts
+    const newPost = {
+      author: this.state.author,
+      content: this.state.content,
+      title: this.state.title,
+      voteCount: 0
+    }
+    posts.push(newPost)
+    this.setState({
+      posts,
+      content: "",
+      title: "",
+      voteCount: 0
+    })
+  }
+
+  vote = (e, sentPost, operator) => {
+    e.preventDefault();
+    const posts = this.state.posts.filter(checkPost => sentPost.title !== checkPost.title);
+    switch (operator) {
+      case "plus":
+        sentPost.voteCount++
+        break;
+      case "minus":
+        sentPost.voteCount--
+        break;
+      default:
+        console.error('Vote functionality broken. Contact admin.')
+    }
+    this.setState({
+      posts: [...posts, sentPost]
+    })
+  }
+
+  render() {
+    return (
+      <div className="App">
+        <h1>Reddit</h1>
+        <CreatePost
+          title={this.state.title}
+          content={this.state.content}
+          postSubmit={this.postSubmit}
+          onContentChange={this.onContentChange}
+        />
+        {this.state.posts.map((post, key) =>
+          <div key={key} className={post.voteCount > 0 ? "post-wrapper" : "post-wrapper post-wrapper-negative"}>
+            <h4>{post.title}</h4>
+            <p>{post.content}</p>
+            <p>{post.voteCount}</p>
+            <button onClick={(e) => this.vote(e, post, "plus")}>Vote Up!</button>
+            <button onClick={(e) => this.vote(e, post, "minus")}>Vote Down!</button>
+          </div>
+        )}
+      </div>
+    );
+  }
 }
-
 export default App;
